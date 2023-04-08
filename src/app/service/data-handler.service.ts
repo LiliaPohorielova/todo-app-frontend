@@ -3,7 +3,6 @@ import {Category} from "../model/Category";
 import {Task} from "../model/Task";
 import {TestData} from "../data/TestData";
 import {BehaviorSubject} from "rxjs";
-import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +13,8 @@ export class DataHandlerService {
 
   categorySubject = new BehaviorSubject<Category[]>(TestData.categories);
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.fillTasks();
-  }
-
-  getCategories(): Category[] {
-    return TestData.categories;
   }
 
   fillTasks() {
@@ -30,10 +25,4 @@ export class DataHandlerService {
     const tasks = TestData.tasks.filter(task => task.category === category);
     this.taskSubject.next(tasks);
   }
-
-  // private apiUrl = 'http://localhost:8080/task/all';
-  //
-  // getAllTasks() {
-  //   return this.http.get(this.apiUrl);
-  // }
 }
