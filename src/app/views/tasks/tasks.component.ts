@@ -114,11 +114,24 @@ export class TasksComponent implements OnInit, AfterViewInit {
     // Открытие диалогового окна
     // Метод оpen (передаем компонент диалогового окна и настройки, типо: название, автофокус, положение и тд)
     const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Edit tasks"], autoFocus: false});
-    // Подписываемся на результат (реактивный стиль Observable)
+    // Подписывваемся на результат (реактивный стиль Observable)
     dialogRef.afterClosed().subscribe(result => {
-      // Обработка результата (то, что ввел пользователь)
-      if (result === 'delete') {
+      // Обработка результата (то, что нам пришло после закрытия диалогового окна)
+
+      if (result === 'delete') { // Удаляем задачу
         this.deleteTask.emit(task);
+        return;
+      }
+
+      if (result === 'complete') {
+        task.completed = true; // Выполняем задачу
+        this.updateTask.emit(task);
+        return;
+      }
+
+      if (result === 'notComplete') {
+        task.completed = false; // Выполняем задачу
+        this.updateTask.emit(task);
         return;
       }
 
