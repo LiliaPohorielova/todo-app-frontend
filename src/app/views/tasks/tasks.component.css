@@ -62,3 +62,6 @@
   font-weight: normal;
 }
 
+.search-fields {
+  width: 250px !important;
+}
