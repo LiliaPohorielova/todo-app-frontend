@@ -67,4 +67,8 @@ export class DataHandlerService {
   addTask(task: Task) {
     return this.taskDao.create(task);
   }
+
+  addCategory(title: string) {
+    return this.categoryDao.create(new Category(null, title));
+  }
 }

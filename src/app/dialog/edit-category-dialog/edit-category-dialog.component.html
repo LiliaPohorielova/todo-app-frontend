@@ -46,6 +46,7 @@
     <!-- Удалить задачу -->
     <button
       mat-button
+      *ngIf="canBeDeleted()"
       (click)="delete()"
       class="red">
       Delete category

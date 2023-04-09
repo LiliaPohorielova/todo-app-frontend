@@ -5,6 +5,7 @@ import {Task} from "../../model/Task";
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edit-category-dialog.component";
+import {OperationType} from "../../dialog/OperationType";
 
 @Component({
   selector: 'app-categories',
@@ -21,6 +22,9 @@ export class CategoriesComponent implements OnInit {
   // selectCategory - название такое же как в HTML
   @Output()
   selectCategory = new EventEmitter<Category>();
+
+  @Output()
+  addCategory = new EventEmitter<string>();
 
   @Input()
   selectedCategory: Category;
@@ -60,7 +64,7 @@ export class CategoriesComponent implements OnInit {
 
   // Диалоговое окно для редактирования категории
   openEditDialog(category: Category) {
-    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {data: [category.title, "Edit category"], autoFocus: false});
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {data: [category.title, "Edit category", OperationType.EDIT], autoFocus: false});
     dialogRef.afterClosed().subscribe(result => {
       // Обработка результата (то, что нам пришло после закрытия диалогового окна)
 
@@ -90,6 +94,13 @@ export class CategoriesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result)
         this.deleteCategory.emit(category); // Нажали удалить
+    });
+  }
+
+  openAddCategoryDialog() {
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {data: ['', "New category", OperationType.ADD], autoFocus: false});
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.addCategory.emit(result as string);
     });
   }
 }

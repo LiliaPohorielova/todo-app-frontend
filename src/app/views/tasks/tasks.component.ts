@@ -9,6 +9,7 @@ import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-d
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
 import {Category} from "../../model/Category";
 import {Priority} from "../../model/Priority";
+import {OperationType} from "../../dialog/OperationType";
 
 @Component({
   selector: 'app-tasks',
@@ -146,7 +147,7 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
     // Открытие диалогового окна
     // Метод оpen (передаем компонент диалогового окна и настройки, типо: название, автофокус, положение и тд)
-    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Edit tasks"], autoFocus: false});
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Edit tasks", OperationType.EDIT], autoFocus: false});
     // Подписывваемся на результат (реактивный стиль Observable)
     dialogRef.afterClosed().subscribe(result => {
       // Обработка результата (то, что нам пришло после закрытия диалогового окна)
@@ -225,7 +226,7 @@ export class TasksComponent implements OnInit, AfterViewInit {
   // Диалоговое окно добавления новой задачи
   openAddTaskDialog() {
     const task = new Task(null, '', false, null, this.selectedCategory);
-    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Add task"], autoFocus: false});
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Add task", OperationType.ADD], autoFocus: false});
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) this.addTask.emit(task);
