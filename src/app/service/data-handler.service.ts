@@ -51,4 +51,8 @@ export class DataHandlerService {
   searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {
     return this.taskDao.search(category, searchText, status, priority);
   }
+
+  deleteTask(id: number): Observable<Task> {
+    return this.taskDao.delete(id);
+  }
 }

@@ -17,3 +17,12 @@ body {
   color: rgba(74, 74, 74, 0.98);
   text-align: center;
 }
+
+.purple {
+  background-color: #9c27b0;
+  color: white
+}
+
+.red {
+  color: red;
+}
