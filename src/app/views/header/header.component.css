@@ -1,0 +1,9 @@
+.header-icon {
+  z-index: 0 !important;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.settings button {
+  margin-right: 0;
+}

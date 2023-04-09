@@ -1,58 +1,114 @@
-<div class="wrapper ">
+<!-- Spinner -->
+<div class="spinner" *ngIf="spinner && spinner.visibility | async"></div>
 
-  <!-- Categories -->
-  <app-categories
-    (selectCategory)="onSelectCategory($event)"
+<!-- Sidebar (Hamburger Menu) -->
+<ng-sidebar-container style="height: 100vh">
 
-    (addCategory)="onAddCategory($event)"
-    (deleteCategory)="onDeleteCategory($event)"
-    (updateCategory)="onUpdateCategory($event)"
-    (searchCategory)="onSearchCategory($event)"
+  <!-- Menu -->
+  <ng-sidebar
+    [opened]="menuOpened"
+    [closeOnClickOutside]="false"
+    [closeOnClickBackdrop]="true"
+    [showBackdrop]="showBackdrop"
+    [mode]="menuMode"
+    [animate]="true"
+    [position]="menuPosition"
+    [autoFocus]="false"
+    (onClosed)="onClosedMenu()"
+  >
 
-    [selectedCategory]="selectedCategory"
-    [categories]="categories">
-  </app-categories>
+    <!-- Intro Instructions -->
+    <div class="sidebar"
+         data-color="purple"
+         data-step="1"
+         data-intro="Filter tasks by category. You can add/edit/delete a category"
+         data-position="right"
+    >
+
+      <app-categories
+        (addCategory)="addCategory($event)"
+        (deleteCategory)="deleteCategory($event)"
+        (searchCategory)="searchCategory($event)"
+        (selectCategory)="selectCategory($event)"
+        (updateCategory)="updateCategory($event)"
 
 
-  <div class="main-panel">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
-      <app-header></app-header>
-    </nav>
+        [categories]="categories"
+        [selectedCategory]="selectedCategory"
+        [uncompletedCountForCategoryAll]="uncompletedCountForCategoryAll"
+        [categorySearchValues]="categorySearchValues"
 
-    <!-- Content -->
-    <div class="content">
-      <div class="container-fluid">
-        <!-- Statistic -->
-        <app-statistic
-          [totalTasksInCategory]="totalTasksCountInCategory"
-          [completeTasksInCategory]="completedCountInCategory"
-          [uncompletedTasksInCategory]="uncompletedCountInCategory">
-        </app-statistic>
-
-        <div class="row-12">
-          <!-- Tasks -->
-          <app-tasks
-            [tasks]="tasks"
-            [priorities]="priorities"
-            (addTask)="onAddTask($event)"
-            (updateTask)="onUpdateTask($event)"
-            (deleteTask)="onDeleteTask($event)"
-            (selectCategory)="onSelectCategory($event)"
-
-            [selectedCategory]="selectedCategory"
-            (filterByStatus)="onFilterTasksByStatus($event)"
-            (filterByTitle)="onSearchTasks($event)"
-            (filterByPriority)="onFilterTasksByPriority($event)"
-          >
-          </app-tasks>
-
-        </div>
-      </div>
+      ></app-categories>
     </div>
 
-    <!-- Footer -->
-    <app-footer></app-footer>
+  </ng-sidebar>
 
+  <!-- Menu  Content -->
+  <div ng-sidebar-content>
+
+    <div class="main-panel">
+      <!-- Header (Navbar) -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <app-header
+          [categoryName]="selectedCategory ? selectedCategory.title : 'All tasks'"
+          [isShow]="showStat"
+
+          (toggleStatistic)="toggleStatistic($event)"
+          (toggleMenu)="toggleMenu()"
+          (settingsChanged)="settingsChanged($event)"
+        ></app-header>
+      </nav>
+
+      <!-- Content -->
+      <div class="content">
+        <div class="container-fluid">
+          <div
+            data-color="purple"
+            data-step="2"
+            data-intro="Here is the statistics of all tasks. List of all tasks with the ability to add/edit/delete"
+            data-position="bottom">
+
+            <!-- Statistic -->
+            <app-statistic
+              [dash]="dash"
+              [showStat]="showStat"
+            >
+            </app-statistic>
+
+          </div>
+
+          <!-- Intro Instructions -->
+          <div class="row">
+            <div class="col-12">
+
+              <app-tasks
+                [showSearch]="showSearch"
+                [totalTasksFounded]="totalTasksFounded"
+                [tasks]="tasks"
+                [priorities]="priorities"
+                [categories]="categories"
+                [selectedCategory]="selectedCategory"
+                [taskSearchValues]="taskSearchValues"
+
+                (searchAction)="searchTasks($event)"
+                (toggleSearch)="toggleSearch($event)"
+                (selectCategory)="selectCategory($event)"
+                (paging)="paging($event)"
+
+                (addTask)="addTask($event)"
+                (deleteTask)="onDeleteTask($event)"
+                (updateTask)="updateTask($event)"
+              >
+              </app-tasks>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <app-footer *ngIf="!isMobile"></app-footer>
+
+    </div>
   </div>
-</div>
+</ng-sidebar-container>

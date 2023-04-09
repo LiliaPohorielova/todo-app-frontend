@@ -1,6 +1,14 @@
-# TodoAppFrontend
+# Todo
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.5.
+
+https://github.com/LiliaPohorielova/todo-frontend
+
+https://github.com/LiliaPohorielova/todo-backend
+## Images
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 
 ## Development server
 
