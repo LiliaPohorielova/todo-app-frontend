@@ -35,31 +35,21 @@ export class AppComponent implements OnInit{
   }
 
   onUpdateTask(task: Task) {
-    // НЕ использовать subscribe() внутри subscribe()!!!
-    this.dataHandler.updateTask(task).subscribe(() => {
-      this.dataHandler.searchTasks(
-        this.selectedCategory,
-        null,
-        null,
-        null
-      ).subscribe(tasks => {
-        this.tasks = tasks;
-      })
-    })
+    this.dataHandler.updateTask(task).subscribe(task => {
+      this.updateTasks()
+    });
   }
 
   onDeleteTask(task: Task) {
-    // НЕ использовать subscribe() внутри subscribe()!!!
-    this.dataHandler.deleteTask(task.id).subscribe(() => {
-      this.dataHandler.searchTasks(
-        this.selectedCategory,
-        null,
-        null,
-        null
-      ).subscribe(tasks => {
-        this.tasks = tasks;
-      })
-    })
+    this.dataHandler.deleteTask(task.id).subscribe(task => {
+      this.updateTasks()
+    });
+  }
+
+  onAddTask(task: Task) {
+    this.dataHandler.addTask(task).subscribe(
+      result => {this.updateTasks()}
+    );
   }
 
   onUpdateCategory(category: Category) {

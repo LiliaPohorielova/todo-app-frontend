@@ -8,7 +8,11 @@ import {TestData} from "../../TestData";
 export class TaskDAOImpl implements TaskDAO {
 
   create(task: Task): Observable<Task> {
-    return undefined;
+    if (task.id === null || task.id === 0) {
+      task.id = this.getLastIdTask();
+    }
+    TestData.tasks.push(task);
+    return of(task);
   }
 
   update(task: Task): Observable<Task> {
@@ -80,6 +84,10 @@ export class TaskDAOImpl implements TaskDAO {
 
   getUncompletedCountByCategory(category: Category): Observable<number> {
     return undefined;
+  }
+
+  getLastIdTask() {
+    return Math.max.apply(Math, TestData.tasks.map(task => task.id)) + 1;
   }
 
 }

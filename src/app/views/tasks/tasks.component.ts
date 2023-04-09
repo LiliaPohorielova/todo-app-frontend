@@ -22,6 +22,9 @@ export class TasksComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, {static: false}) private sort: MatSort;
 
   @Output()
+  addTask = new EventEmitter<Task>();
+
+  @Output()
   updateTask = new EventEmitter<Task>();
 
   @Output()
@@ -46,6 +49,9 @@ export class TasksComponent implements OnInit, AfterViewInit {
   searchTaskText: string;
   selectedStatusFilter: boolean = null;   // по-умолчанию будут показываться все задачи
   selectedPriorityFilter: Priority = null;
+
+  @Input()
+  selectedCategory: Category;
 
   // Передаем список задач с помощью Input на Set
   @Input('tasks')
@@ -208,10 +214,21 @@ export class TasksComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Фильтрация по приоритету
   onFilterByPriority(priority: Priority) {
     if (priority != this.selectedPriorityFilter) {
       this.selectedPriorityFilter = priority;
       this.filterByPriority.emit(this.selectedPriorityFilter);
     }
+  }
+
+  // Диалоговое окно добавления новой задачи
+  openAddTaskDialog() {
+    const task = new Task(null, '', false, null, this.selectedCategory);
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, "Add task"], autoFocus: false});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.addTask.emit(task);
+    });
   }
 }
