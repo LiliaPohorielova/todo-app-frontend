@@ -5,6 +5,7 @@ import {TestData} from "../data/TestData";
 import {BehaviorSubject, Observable} from "rxjs";
 import {TaskDAOImpl} from "../data/dao/impl/TaskDAOImpl";
 import {CategoryDAOImpl} from "../data/dao/impl/CategoryDAOImpl";
+import {Priority} from "../model/Priority";
 
 @Injectable({
   providedIn: 'root'
@@ -29,12 +30,15 @@ export class DataHandlerService {
     this.taskSubject.next(tasks);
   }
 
-  findAllTasks(): Observable<Task[]>{
-    // @ts-ignore
+  findAllTasks(): Observable<Task[]> {
     return this.taskDao.findAll();
   }
 
   findAllCategories(): Observable<Category[]>{
     return this.categoryDao.findAll();
+  }
+
+  searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {
+    return this.taskDao.search(category, searchText, status, priority);
   }
 }

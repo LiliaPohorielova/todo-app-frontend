@@ -27,8 +27,14 @@ export class TasksComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) private paginator: MatPaginator;
   @ViewChild(MatSort, {static: false}) private sort: MatSort;
 
-  @Input()
   public tasks: Task[];
+
+  // Передаем список задач с помощью Input на Set
+  @Input('tasks')
+  public set setTasks(tasks: Task[]) {
+    this.tasks = tasks;
+    this.fillTable();
+  }
 
   constructor(private dataHandler: DataHandlerService) {
   }
@@ -61,10 +67,11 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   //показывает задачи учитывая поиск, фильтр, категории
   private fillTable() {
+    if (!this._dataSource) return;
     this._dataSource.data = this.tasks; //обновить источник данных для таблицы
     this.addTableObjects(); // добавляем визуальные объекты
 
-    // объясняем сортировщику как и по чем сортировать
+    // объесняем сортировщику как и по чем сортировать
     // @ts-ignore: ошибка с датой (можно возвращать любой тип)
     this._dataSource.sortingDataAccessor = (task, colName) => {
       switch (colName) {
