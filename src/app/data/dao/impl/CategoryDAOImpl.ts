@@ -44,7 +44,9 @@ export class CategoryDAOImpl implements CategoryDAO {
   }
 
   search(title: string): Observable<Category[]> {
-    return undefined;
+    return of(TestData.categories.filter(
+      categories => categories.title.toUpperCase().includes(title.toUpperCase()))
+      .sort((c1,c2) => c1.title.localeCompare(c2.title)));
   }
 
   getLastIdCategory() {

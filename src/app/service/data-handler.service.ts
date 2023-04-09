@@ -71,4 +71,8 @@ export class DataHandlerService {
   addCategory(title: string) {
     return this.categoryDao.create(new Category(null, title));
   }
+
+  searchCategories(title: string) {
+    return this.categoryDao.search(title);
+  }
 }
