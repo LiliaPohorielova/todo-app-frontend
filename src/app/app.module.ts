@@ -41,6 +41,7 @@ import {TASK_URL_TOKEN} from "./data/dao/impl/TaskService";
 import {PRIORITY_URL_TOKEN} from "./data/dao/impl/PriorityService";
 import {STATISTIC_URL_TOKEN} from "./data/dao/impl/StatisticService";
 import {CustomHttpInterceptor} from "./interceptor/http-interceptor";
+import {OAuthModule} from "angular-oauth2-oidc";
 
 registerLocaleData(localeRu);
 
@@ -82,7 +83,13 @@ registerLocaleData(localeRu);
     MatCheckboxModule,
     ColorPickerModule,
     SidebarModule,
-    HttpClientModule
+    HttpClientModule,
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: ['http://localhost:8888/rest'],
+        sendAccessToken: true
+      }
+    })
   ],
   providers: [
     {
@@ -92,19 +99,19 @@ registerLocaleData(localeRu);
     },
     {
       provide: CATEGORY_URL_TOKEN,
-      useValue: 'http://localhost:8080/category'
+      useValue: 'http://localhost:4200/rest/category'
     },
     {
       provide: TASK_URL_TOKEN,
-      useValue: 'http://localhost:8080/task'
+      useValue: 'http://localhost:4200/rest/task'
     },
     {
       provide: PRIORITY_URL_TOKEN,
-      useValue: 'http://localhost:8080/priority'
+      useValue: 'http://localhost:4200/rest/priority'
     },
     {
       provide: STATISTIC_URL_TOKEN,
-      useValue: 'http://localhost:8080/statistic'
+      useValue: 'http://localhost:4200/rest/statistic'
     },
     {
       provide: MAT_DATE_LOCALE,

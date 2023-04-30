@@ -16,6 +16,11 @@ import {Statistic} from "./model/Statistic";
 import {StatisticService} from "./data/dao/impl/StatisticService";
 import {CookiesUtils} from "./utils/CookiesUtils";
 import {SpinnerService} from "./service/spinner.service";
+import {
+  AuthConfig,
+  NullValidationHandler,
+  OAuthService
+} from "angular-oauth2-oidc";
 
 @Component({
   selector: 'app-root',
@@ -32,6 +37,10 @@ export class AppComponent implements OnInit {
   priorities: Priority[];
   selectedCategory: Category = null;
   totalTasksFounded: number;
+
+  // username: string;
+  // isLogged: boolean;
+  // isAdmin: boolean;
 
   // Search
   searchTaskText = '';
@@ -82,58 +91,68 @@ export class AppComponent implements OnInit {
     private statService: StatisticService,
     private introService: IntroService,
     private deviceService: DeviceDetectorService,
-    private spinnerService: SpinnerService
-  ) {
-    this.spinner = spinnerService;
-
-    this.statService.getStatistic().subscribe((result => {     // сначала получаем данные статистики
-      this.stat = result;
-      this.uncompletedCountForCategoryAll = this.stat.uncompletedTotal;
-      // заполнить категории
-      this.fillAllCategories().subscribe(res => {
-        this.categories = res;
-        //пытаемся восстановить cookies, если они были ранее
-        if (!this.initSearchCookies()) {
-          this.taskSearchValues = new TaskSearchValues();
-          this.taskSearchValues.pageSize = this.defaultPageSize;
-          this.taskSearchValues.pageNumber = this.defaultPageNumber;
-        }
-        if (this.isMobile) {
-          this.showStat = false; // для мобильных устройств никогда не показываем статистику
-        } else {
-          this.initShowStatCookie();
-        }
-        this.initShowSearchCookie();
-        // первоначальное отображение задач при загрузке приложения
-        // запускаем только после выполнения статистики (т.к. понадобятся ее данные) и загруженных категорий
-        this.selectCategory(this.selectedCategory);
-      });
-    }));
-
-    // определяем тип устройства
-    this.isMobile = deviceService.isMobile();
-    this.isTablet = deviceService.isTablet();
-
-    this.showStat = !this.isMobile;
-    this.showSearch = !this.isMobile;
-
-    this.setMenuValues();
-  }
+    private spinnerService: SpinnerService,
+    private oauthService: OAuthService,
+  ) { }
 
   ngOnInit() {
-    // для мобильных и планшетов - не показывать интро
-    if (!this.isMobile && !this.isTablet) {
-      // this.introService.startIntroJs(true);
-    }
-    // заполнить категории
-    this.fillAllCategories().subscribe(res => {
-      this.categories = res;
-      // первоначальное отображение задач при загрузке приложения
-      // запускаем только после выполнения статистики (т.к. понадобятся ее данные) и загруженных категорий
-      this.selectCategory(this.selectedCategory);
+    this.oauthService.configure(this.authConfig);
+    this.oauthService.tokenValidationHandler = new  NullValidationHandler();
+    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      if (!this.oauthService.hasValidAccessToken()) {
+        // User is not authenticated, redirect to login page
+        this.oauthService.initLoginFlow();
+      } else {
+        this.spinner = this.spinnerService;
+
+        this.statService.getStatistic().subscribe((result => {     // сначала получаем данные статистики
+          this.stat = result;
+          this.uncompletedCountForCategoryAll = this.stat.uncompletedTotal;
+          // заполнить категории
+          this.fillAllCategories().subscribe(res => {
+            this.categories = res;
+            //пытаемся восстановить cookies, если они были ранее
+            if (!this.initSearchCookies()) {
+              this.taskSearchValues = new TaskSearchValues();
+              this.taskSearchValues.pageSize = this.defaultPageSize;
+              this.taskSearchValues.pageNumber = this.defaultPageNumber;
+            }
+            if (this.isMobile) {
+              this.showStat = false; // для мобильных устройств никогда не показываем статистику
+            } else {
+              this.initShowStatCookie();
+            }
+            this.initShowSearchCookie();
+            // первоначальное отображение задач при загрузке приложения
+            // запускаем только после выполнения статистики (т.к. понадобятся ее данные) и загруженных категорий
+            this.selectCategory(this.selectedCategory);
+          });
+        }));
+
+        // определяем тип устройства
+        this.isMobile = this.deviceService.isMobile();
+        this.isTablet = this.deviceService.isTablet();
+
+        this.showStat = !this.isMobile;
+        this.showSearch = !this.isMobile;
+
+        this.setMenuValues();
+
+        // для мобильных и планшетов - не показывать интро
+        if (!this.isMobile && !this.isTablet) {
+          // this.introService.startIntroJs(true);
+        }
+        // заполнить категории
+        this.fillAllCategories().subscribe(res => {
+          this.categories = res;
+          // первоначальное отображение задач при загрузке приложения
+          // запускаем только после выполнения статистики (т.к. понадобятся ее данные) и загруженных категорий
+          this.selectCategory(this.selectedCategory);
+        });
+        // заполнить приоритеты
+        this.fillAllPriorities();
+      }
     });
-    // заполнить приоритеты
-    this.fillAllPriorities();
   }
 
   /* Categories */
@@ -185,13 +204,16 @@ export class AppComponent implements OnInit {
     if (category) { // если это не категория Все - то заполняем дэш данными выбранной категории
       this.fillDashData(category.completedCount, category.uncompletedCount);
     } else {
-      this.fillDashData(this.stat.completedTotal, this.stat.uncompletedTotal); // заполняем дэш данными для категории Все
+      this.fillDashData(this.stat?.completedTotal, this.stat?.uncompletedTotal); // заполняем дэш данными для категории Все
     }
     // сбрасываем, чтобы показывать результат с первой страницы
-    this.taskSearchValues.pageNumber = 0;
-    this.selectedCategory = category;
-    this.taskSearchValues.categoryId = category ? category.id : null;
-    this.searchTasks(this.taskSearchValues);
+    if (this.taskSearchValues) {
+      this.taskSearchValues.pageNumber = 0;
+      this.selectedCategory = category;
+      this.taskSearchValues.categoryId = category ? category.id : null;
+      this.searchTasks(this.taskSearchValues);
+    }
+
     if (this.isMobile) {
       this.menuOpened = false; // для телефонов - автоматически скрываем боковое меню
     }
@@ -412,4 +434,13 @@ export class AppComponent implements OnInit {
       if (val) this.showStat = val === 'true';
     }
   }
+
+  authConfig: AuthConfig = {
+    issuer: 'http://localhost:8080/auth/realms/Todo%20App',
+    redirectUri: window.location.origin,
+    clientId: 'todo_app_angular',
+    responseType: 'code',
+    scope: 'openid profile email offline_access',
+    showDebugInformation: true,
+  };
 }

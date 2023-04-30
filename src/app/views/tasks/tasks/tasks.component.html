@@ -251,9 +251,10 @@
                 <mat-checkbox
                   (click)="$event.stopPropagation()"
                   (change)="$event ? onToggleCompleted(task) : null"
-                  [checked]="task.completed"
+                  [checked]="task.completed === 1"
                 >
                 </mat-checkbox>
+
               </td>
             </ng-container>
 

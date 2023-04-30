@@ -5,6 +5,7 @@ import {IntroService} from "../../service/intro.service";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {DialogAction} from "../../object/DialogResult";
 import {Priority} from "../../model/Priority";
+import {OAuthService} from "angular-oauth2-oidc";
 
 @Component({
   selector: 'app-header',
@@ -33,7 +34,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private introService: IntroService,
-    private deviceService: DeviceDetectorService
+    private deviceService: DeviceDetectorService,
+    private oauthService: OAuthService
   ) {
     this.isMobile = deviceService.isMobile();
   }
@@ -66,5 +68,9 @@ export class HeaderComponent implements OnInit {
 
   onToggleMenu() {
     this.toggleMenu.emit();
+  }
+
+  logout() {
+    this.oauthService.logOut();
   }
 }
